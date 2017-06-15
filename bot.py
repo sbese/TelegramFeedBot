@@ -1,10 +1,13 @@
-import telebot
+
 
 class Bot:
-    bot=0
+    import telebot
+    import client as Client
+    import info
+    client=Client.client(info.api,info.api_hash,info.phone)
     client_chat_id=280629735
     def __init__(self,token):
-        self.bot=telebot.TeleBot(token)
+        self.bot=telebot.TeleBot(info.token)
 
         @self.bot.message_handler()
         def nm(message):
@@ -16,13 +19,13 @@ class Bot:
                     to_id=int(message.text.partition('forward_to_')[2])
 
                 else: self.bot.forward_message(chat_id=to_id,
-                                          from_chat_id=self.client_chat_id,
-                                          message_id=message.message_id)
+                                               from_chat_id=self.client_chat_id,
+                                               message_id=message.message_id)
 
             else:
                 splited_text=message.text.split()
                 if splited_text[0]=='/update':
-                    self.update(message)
+                    self.update_feed(message)
                 if splited_text[0]=='/add':
                     pass
                 if splited_text[0]=='/dell':
