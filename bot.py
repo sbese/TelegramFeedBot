@@ -1,6 +1,8 @@
+import telebot
+
 class Bot:
-    def __init__(self,init):
-        self.bot=telebot.TeleBot('377500143:AAGCIxWShxKID1CdAIRE4NstRoUfsw4CYjo')
+    def __init__(self,token):
+        self.bot=telebot.TeleBot(token)
 
     def update(message):
         pass
