@@ -1,14 +1,17 @@
 class Client:
-    """Class that represent all functions that can be used for conectiong to telegram, recieving messages and fordwarding them"""
+    """
+    Class that represent all functions that can be used for conectiong to telegram,
+    recieving messages and fordwarding them
+    """
 
     def __init__(self, api_id, api_hash, phone, logs_name=None):
         """
-            Constructor of client class
+        Constructor of client class
 
-             api_id - id of app that placed on your telegram app page
-             api_hash - hash code of app that placed on your telegram app page
-             phone - your phone that used in your telegram page
-             logs_name - name of file that will contain logs. Can be outmitted.
+        api_id - id of app that placed on your telegram app page
+        api_hash - hash code of app that placed on your telegram app page
+        phone - your phone that used in your telegram page
+        logs_name - name of file that will contain logs. Can be outmitted.
         """
 
         import telethon
@@ -21,166 +24,156 @@ class Client:
         self.logs_name = logs_name
 
         self.client = telethon.TelegramClient(logs_name, api_id, api_hash)
-    	self.client.connect()
-    	if not self.client.is_user_authorized():
-    		self.client.send_code_request(phone)
-    		self.client.sign_in(phone, input('Enter code here: '))
+        self.client.connect()
+        if not self.client.is_user_authorized():
+            self.client.send_code_request(phone)
+            self.client.sign_in(phone, input('Enter code here: '))
 
     def get_enity_by_username(self, username):
         """
-            Return enity object by username of chat in telegram. Enity contains list of chats and list of users object
+        Return enity object by username of chat in telegram. Enity contains list of chats and list of users object
 
-            username - string of user, chat or channel in telegram
+        username - string of user, chat or channel in telegram
         """
 
         return self.client.invoke(self.TG.contacts.ResolveUsernameRequest(username))
 
     def get_enity_type(self, enity):
         """
-            Return type of enity that can be recieved from method get_enity_by_username of other ways
+        Return type of enity that can be recieved from method get_enity_by_username of other ways
 
-            enity - object that can be recieved from method get_enity_by_username or other manual ways, but use them(ways) by your own risk
+        enity - object that can be recieved from method get_enity_by_username or other manual ways, but use them(ways) by your own risk
         """
 
         if len(enity.chats) != 0:
-    		return 'chat'
-    	elif len(enity.users) != 0:
-    		return 'user'
-    	else:
-    		return 'unknown'
+            return 'chat'
+        elif len(enity.users) != 0:
+            return 'user'
+        else:
+            return 'unknown'
 
     def get_InputPeer_by_enity(self, enity):
         """
-            Return InputPeer by enity that can be recieved from method get_enity_by_username
+        Return InputPeer by enity that can be recieved from method get_enity_by_username
 
-            enity - object that can be recieved from method get_enity_by_username or other manual ways, but use them(ways) by your own risk
+        enity - object that can be recieved from method get_enity_by_username or other manual ways, but use them(ways) by your own risk
         """
 
-    	if self.get_enity_type(enity) == 'user':
-    		return self.tl.utils.get_input_peer(enity.users[0])
-    	elif self.get_enity_type(enity) == 'chat':
-    		return self.tl.utils.get_input_peer(enity.chats[0])
-    	else:
-    		return None
+        if self.get_enity_type(enity) == 'user':
+            return self.tl.utils.get_input_peer(enity.users[0])
+        elif self.get_enity_type(enity) == 'chat':
+            return self.tl.utils.get_input_peer(enity.chats[0])
+        else:
+            return None
 
     def get_InputPeer_by_username(self, username):
         """
-            Return InputPeer by username
+        Return InputPeer by username
 
-            username - string of user, chat or channel in telegram
+        username - string of user, chat or channel in telegram
         """
 
-    	peer = self.client.invoke(self.TG.contacts.ResolveUsernameRequest(username)    				)
-    	return self.get_InputPeer_by_enity(peer)
+        return self.get_InputPeer_by_enity(
+                self.client.invoke(
+                    self.TG.contacts.ResolveUsernameRequest(username))
+                )
 
     def get_messages_enity_by_enity(self, enity, messages_count=50):
         """
-            Return messages enity by enity that can e recieved from method get_enity_by_username
-            Messages enity contains list of messages, list of chats and list of users that are in dialog
+        Return messages enity by enity that can e recieved from method get_enity_by_username
+        Messages enity contains list of messages, list of chats and list of users that are in dialog
 
-            enity - object that can be recieved from method get_enity_by_username or other manual ways, but use them(ways) by your own risk
-            messages_count - count of messages that will be in messages enity
+        enity - object that can be recieved from method get_enity_by_username or other manual ways, but use them(ways) by your own risk
+        messages_count - count of messages that will be in messages enity
         """
 
         return self.client.invoke(
-    				self.TG.messages.GetHistoryRequest(
-    					peer = self.get_InputPeer_by_enity(enity),
-    					offset_id = 0,
-    					offset_date = None,
-    					add_offset = 0,
-    					limit = messages_count,
-    					max_id = 0,
-    					min_id = 0)
-    				)
+            self.TG.messages.GetHistoryRequest(
+                peer = self.get_InputPeer_by_enity(enity),
+                offset_id = 0,
+                offset_date = None,
+                add_offset = 0,
+                limit = messages_count,
+                max_id = 0,
+                min_id = 0)
+            )
 
     def get_messages_enity_by_username(self, username, messages_count=50):
         """
-            Return messages enity by enity that can e recieved from method get_enity_by_username
-            Messages enity contains list of messages, list of chats and list of users that are in dialog
+        Return messages enity by enity that can e recieved from method get_enity_by_username
+        Messages enity contains list of messages, list of chats and list of users that are in dialog
 
-            username - string of user, chat or channel in telegram
-            messages_count - count of messages that will be in messages enity
+        username - string of user, chat or channel in telegram
+        messages_count - count of messages that will be in messages enity
         """
 
-	       return self.client.invoke(
-    				self.TG.messages.GetHistoryRequest(
-    					peer = self.get_InputPeer_by_username(username),
-    					offset_id = 0,
-    					offset_date = None,
-    					add_offset = 0,
-    					limit = messages_count,
-    					max_id = 0,
-    					min_id = 0)
-    				)
+        return self.client.invoke(
+            self.TG.messages.GetHistoryRequest(
+                peer = self.get_InputPeer_by_username(username),
+                offset_id = 0,
+                offset_date = None,
+                add_offset = 0,
+                limit = messages_count,
+                max_id = 0,
+                min_id = 0)
+            )
 
     def forward_messages_by_enities(self, from_enity, to_enity, messages_enity):
         """
-            Forward messages from one person to other
+        Forward messages from one person to other
 
-            from_enity - enity that is original owner of messages
-                         object that can be recieved from method get_InputPeer_by_enity or get_InputPeer_by_username or other manual ways,
-                         but use them(ways) by your own risk
-            to_enity - enity that is user, channel or chat that must become messages
-                         object that can be recieved from method get_InputPeer_by_enity or get_InputPeer_by_username or other manual ways,
-                         but use them(ways) by your own risk
-            messages_enity - enity of messages that can be recieved from get_messages_enity_by_username method or get_messages_enity_by_enity method
+        from_enity - enity that is original owner of messages
+                        object that can be recieved from method get_InputPeer_by_enity or get_InputPeer_by_username or other manual ways,
+                        but use them(ways) by your own risk
+        to_enity - enity that is user, channel or chat that must become messages
+                        object that can be recieved from method get_InputPeer_by_enity or get_InputPeer_by_username or other manual ways,
+                        but use them(ways) by your own risk
+        messages_enity - enity of messages that can be recieved from get_messages_enity_by_username method or get_messages_enity_by_enity method
         """
 
-        return self.client.invoke(self.TG.messages.ForwardMessagesRequest(
-    				from_peer = self.get_InputPeer_by_enity(from_enity)
-    				id = [msg.id for msg in messages_enity.messages]
-    				to_peer = self.get_InputPeer_by_enity(to_enity)
-    				random_id = [self.tl.helpers.generate_random_long() for _ in
-    							 range(len(messages_enity.messages)]
-    				))
+        return self.client.invoke(
+            self.TG.messages.ForwardMessagesRequest(
+                from_peer = self.get_InputPeer_by_enity(from_enity),
+                id = [msg.id for msg in messages_enity.messages],
+                to_peer = self.get_InputPeer_by_enity(to_enity),
+                random_id = [self.tl.helpers.generate_random_long() for _ in
+                            range(len(messages_enity.messages))])
+            )
 
     def forward_messages_by_peernames(self, from_peer_name, to_peer_name, messages_enity):
         """
-            Forward messages from one person to other
+        Forward messages from one person to other
 
-            from_peer_name - string that is original name owner of messages(chat, channel or user)
-            to_peer_name - string that is user, channel or chat name that must become messages
-            messages_enity - enity of messages that can be recieved from get_messages_enity_by_username method or get_messages_enity_by_enity method
+        from_peer_name - string that is original name owner of messages(chat, channel or user)
+        to_peer_name - string that is user, channel or chat name that must become messages
+        messages_enity - enity of messages that can be recieved from get_messages_enity_by_username method or get_messages_enity_by_enity method
         """
 
-        return self.client.invoke(self.TG.messages.ForwardMessagesRequest(
-    				from_peer = self.get_InputPeer_by_username(from_peer_name)
-    				id = [msg.id for msg in messages_enity.messages]
-    				to_peer = self.get_InputPeer_by_username(to_peer_name)
-    				random_id = [self.tl.helpers.generate_random_long() for _ in
-    							 range(len(messages_enity.messages)]
-    				))
+        return self.client.invoke(
+            self.TG.messages.ForwardMessagesRequest(
+                from_peer = self.get_InputPeer_by_username(from_peer_name),
+                id = [msg.id for msg in messages_enity.messages],
+                to_peer = self.get_InputPeer_by_username(to_peer_name),
+                random_id = [self.tl.helpers.generate_random_long() for _ in
+                            range(len(messages_enity.messages))])
+            )
 
     def forward_messages_by_InputPeers(self, from_peer, to_peer, messages_enity):
         """
-            Forward messages from one person to other
+        Forward messages from one person to other
 
-            from_peer - InputPeer user, channel or user that is owner of messages
-                         object that can be recieved from method get_enity_by_username or other manual ways, but use them(ways) by your own risk
-            to_peer - InputPeer user, channel or user that must become messages
-                         object that can be recieved from method get_enity_by_username or other manual ways, but use them(ways) by your own risk
-            messages_enity - enity of messages that can be recieved from get_messages_enity_by_username method or get_messages_enity_by_enity method
+        from_peer - InputPeer user, channel or user that is owner of messages
+        object that can be recieved from method get_enity_by_username or other manual ways, but use them(ways) by your own risk
+        to_peer - InputPeer user, channel or user that must become messages
+        object that can be recieved from method get_enity_by_username or other manual ways, but use them(ways) by your own risk
+        messages_enity - enity of messages that can be recieved from get_messages_enity_by_username method or get_messages_enity_by_enity method
         """
 
-        return self.client.invoke(self.TG.messages.ForwardMessagesRequest(
-    				from_peer = from_peer
-    				id = [msg.id for msg in messages_enity.messages]
-    				to_peer = to_peer
-    				random_id = [self.tl.helpers.generate_random_long() for _ in
-    							 range(len(messages_enity.messages)]
-    				))
-	
-	def sort_messages_by_date(messages):
-		
-		return messages.sort(key=lambda x:int(time.mktime(time.strptime(x.date.ctime()))))
-	
-	def get_messages_from_all_channels(list_channels):
-		if len(list_channels)!=0:
-			messages=self.get_messages_enity_by_username(list_channels[0])
-			if len(list_channels)!=1:
-				for i in range(1,len(list_channels)):
-					messages.extend(self.get_messages_enity_by_username(list_channels[i]))
-			return messages
-		else:
-			pass
-		
+        return self.client.invoke(
+        self.TG.messages.ForwardMessagesRequest(
+            from_peer = from_peer,
+            id = [msg.id for msg in messages_enity.messages],
+            to_peer = to_peer,
+            random_id = [self.tl.helpers.generate_random_long() for _ in
+                        range(len(messages_enity.messages))])
+        )
