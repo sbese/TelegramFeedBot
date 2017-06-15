@@ -169,3 +169,18 @@ class Client:
     				random_id = [self.tl.helpers.generate_random_long() for _ in
     							 range(len(messages_enity.messages)]
     				))
+	
+	def sort_messages_by_date(messages):
+		
+		return messages.sort(key=lambda x:int(time.mktime(time.strptime(x.date.ctime()))))
+	
+	def get_messages_from_all_channels(list_channels):
+		if len(list_channels)!=0:
+			messages=self.get_messages_enity_by_username(list_channels[0])
+			if len(list_channels)!=1:
+				for i in range(1,len(list_channels)):
+					messages.extend(self.get_messages_enity_by_username(list_channels[i]))
+			return messages
+		else:
+			pass
+		
