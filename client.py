@@ -197,4 +197,8 @@ class Client:
             )
 
     def close_connection(self):
+        """
+        Close connetction with this client session
+        """
+
         self.client.disconnect()
