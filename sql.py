@@ -1,8 +1,5 @@
 class SQL_helper:
     
-    import sqlite3
-    import os
-    
     def __init__(self,path,db_name):
 
         import sqlite3
@@ -15,8 +12,8 @@ class SQL_helper:
         
     def check_id(self,chat_id,table):
         
+        
         ids=[x[0] for x in [x for x in self.cursor.execute('SELECT id FROM {}'.format(table))]]
-        print(ids)
         if not (chat_id in ids):
             self.cursor.execute(
                 'INSERT INTO {}(id) VALUES({})'.format(
@@ -25,9 +22,11 @@ class SQL_helper:
                 )
             self.conn.commit()
 
+    
+
     def get_channels(self,chat_id,table):
 
-        return[
+        res=[
             x[0] for x in [
                 x for x in self.cursor.execute(
                     'select channels from {} where id={}'.format(
@@ -35,7 +34,25 @@ class SQL_helper:
                         )
                     )
                 ]
-            ][0].split(',')
+            ]
+        if len(res)!=0:
+            if res[0] is None:
+                return []
+            else:
+                return str(res[0]).split(',')
+        else :
+            return []
+
+
+    def get_all_channels(self,table):
+
+        return[
+            x[0] for x in [
+                x for x in self.cursor.execute(
+                    'select channels from {} '.format(table)
+                    )
+                ]
+            ]
 
     def missing_channels(self,list_channels,table):
 
@@ -47,8 +64,12 @@ class SQL_helper:
                 ]
             ]
 
-        for channel in list_channels:
-            if not (channel in channels):
-                yield channel
+        return [channel for channel in list_channels if not channel in channels]
+        
+
+    def update_channels_list(self,channels,table,chat_id):
+        self.cursor.execute("UPDATE {} set channels={} where id={}".format(table,channels,chat_id))
+        self.conn.commit()   
+       
 
 

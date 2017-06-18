@@ -2,18 +2,19 @@
 
 class Bot:
 
-    def __init__(self,token):
+    def __init__(self):
 
+        import info
         import telebot
         from client import Client
-        import info
         from sql import SQL_helper as SQL_DB
-        self.client=Client(info.api,info.api_hash,info.phone)
-        self.db=SQL_DB(info.path,info.db)
-        self.bot=telebot.TeleBot(info.token)
+
+        self.info=info
+        self.client=Client(self.info.api,self.info.api_hash,self.info.phone)
+        self.db=SQL_DB(self.info.path,self.info.db)
+        self.bot=telebot.TeleBot(self.info.token,threaded=False)
         self.to_id=0
-        self.client=Client(info.api,info.api_hash,info.phone)
-        self.client_chat_id=info.client_chat_id
+        self.client_chat_id=self.info.client_chat_id
 
         
         @self.bot.message_handler()
@@ -27,19 +28,43 @@ class Bot:
                                                message_id=message.message_id)
 
             else:
-                self.db.check_id(message.chat.id)
-                splited_text=message.text.split()
+                print(message.text)
+                self.db.check_id(message.chat.id,self.info.users_table)
+                splited_text=message.text.replace(',',' ').split()
+                
                 if splited_text[0]=='/update':
-                    self.update_feed(message)
+                    self.update_feed(message,splited_text[:1])
                 if splited_text[0]=='/add':
-                    pass
+                    self.add_channels(message,splited_text[:1])
                 if splited_text[0]=='/dell':
                     pass
 
     def update_feed(message):
         pass
-    def add_channels(message):
-        pass
+    def add_channels(self,message,channels):
+        channels=list(set(channels))
+        Current_channels=self.db.get_channels(message.chat.id,self.info.users_table)
+        for i in Current_channels:
+            if channels.count(i)!=0:
+                channels.remove(i)
+        present_channels=self.db.get_all_channels(self.info.channels_table)
+        added_channels=[]
+        for i in channels:
+            if present.count(i)!=0:
+                added_channels.append(i)
+                channels.remove(i)
+        
+        for i in chanels:
+            type_chat=self.client.get_enity_type(self.client.get_enity_by_username(i))
+            if type_channel=='none' or type_channel=='user':
+                channels.remove(i)
+            else:
+                join_channel_by_channelname(i)
+        self.db.update_channels_list(str(channels+added_channels+Current_channels)[1:-1],self.info.users_table,message.chat.id)
+        
+        
+        
+        
     def del_channels(message):
         pass
     
