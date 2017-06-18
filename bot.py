@@ -16,7 +16,7 @@ class Bot:
         self.to_id=0
         self.client_chat_id=self.info.client_chat_id
 
-        
+
         @self.bot.message_handler()
         def nm(message):
             if message.chat.id==self.client_chat_id:
@@ -31,7 +31,7 @@ class Bot:
                 print(message.text)
                 self.db.check_id(message.chat.id,self.info.users_table)
                 splited_text=message.text.replace(',',' ').split()
-                
+
                 if splited_text[0]=='/update':
                     self.update_feed(message,splited_text[:1])
                 if splited_text[0]=='/add':
@@ -50,10 +50,10 @@ class Bot:
         present_channels=self.db.get_all_channels(self.info.channels_table)
         added_channels=[]
         for i in channels:
-            if present.count(i)!=0:
+            if present_channels.count(i)!=0:
                 added_channels.append(i)
                 channels.remove(i)
-        
+
         for i in chanels:
             type_chat=self.client.get_enity_type(self.client.get_enity_by_username(i))
             if type_channel=='none' or type_channel=='user':
@@ -61,14 +61,14 @@ class Bot:
             else:
                 join_channel_by_channelname(i)
         self.db.update_channels_list(str(channels+added_channels+Current_channels)[1:-1],self.info.users_table,message.chat.id)
-        
-        
-        
-        
+
+
+
+
     def del_channels(message):
         pass
-    
-   
+
+
 
     def start(self):
         self.bot.polling(none_stop=True)
