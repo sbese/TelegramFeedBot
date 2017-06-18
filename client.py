@@ -195,3 +195,6 @@ class Client:
                 self.TG.channels.JoinChannelRequest(
                     self.get_InputPeer_by_username(channelname))
             )
+
+    def close_connection(self):
+        self.client.disconnect()
