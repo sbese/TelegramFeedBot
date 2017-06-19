@@ -27,7 +27,7 @@ class SQL_helper:
     def get_channels(self,chat_id,table):
 
         res=[
-            x[0] for x in [
+            x[0].replace("'",'') for x in [
                 x for x in self.cursor.execute(
                     'select channels from {} where id={}'.format(
                         table,str(chat_id)
@@ -68,5 +68,13 @@ class SQL_helper:
 
 
     def update_channels_list(self,channels,table,chat_id):
-        self.cursor.execute("UPDATE {} set channels={} where id={}".format(table,channels,chat_id))
+        self.cursor.execute("UPDATE {} set channels='{}' where id={}".format(table,channels,chat_id))
+        self.conn.commit()
+
+    def add_channel(self,channel,table):
+        self.cursor.execute(
+                'INSERT INTO {}(channel) VALUES("{}")'.format(
+                    table,str(channel)
+                    )
+                )
         self.conn.commit()

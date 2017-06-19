@@ -33,9 +33,9 @@ class Bot:
                 splited_text=message.text.replace(',',' ').split()
 
                 if splited_text[0]=='/update':
-                    self.update_feed(message,splited_text[:1])
+                    self.update_feed(message,splited_text[1:])
                 if splited_text[0]=='/add':
-                    self.add_channels(message,splited_text[:1])
+                    self.add_channels(message,splited_text[1:])
                 if splited_text[0]=='/dell':
                     pass
 
@@ -54,13 +54,17 @@ class Bot:
                 added_channels.append(i)
                 channels.remove(i)
 
-        for i in chanels:
+        for i in channels:
             type_chat=self.client.get_enity_type(self.client.get_enity_by_username(i))
-            if type_channel=='none' or type_channel=='user':
+            if type_chat=='unknown' or type_chat=='user':
                 channels.remove(i)
             else:
-                join_channel_by_channelname(i)
-        self.db.update_channels_list(str(channels+added_channels+Current_channels)[1:-1],self.info.users_table,message.chat.id)
+                self.client.join_channel_by_channelname(i)
+                self.db.add_channel(i,self.info.channels_table)
+
+        update_list=str(str(channels+added_channels+Current_channels).replace(', ',',').replace("'",'')[1:-1])
+        print(update_list)
+        self.db.update_channels_list(update_list,self.info.users_table,message.chat.id)
 
 
 
